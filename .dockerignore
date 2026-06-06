@@ -1,0 +1,39 @@
+# ============================================================
+# AI Analytics Agent — .dockerignore
+# ============================================================
+
+.git
+.gitignore
+.env
+.venv
+venv/
+__pycache__
+*.pyc
+*.pyo
+
+# Testing
+tests/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+
+# Docs
+*.md
+!README.md
+LICENSE
+
+# Local data
+data/analytics.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose*.yml

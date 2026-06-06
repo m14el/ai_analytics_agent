@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Проекты — AI Analytics Agent{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📁 Проекты</h1>
+    <p>Анализ прибыльности по проектам</p>
+</div>
+
+<div class="card animate-in">
+    <div class="card-header">
+        <span class="card-title">Все проекты</span>
+        <span class="card-badge" style="background: var(--bg-glass); color: var(--text-secondary);">
+            {{ projects|length }}
+        </span>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Проект</th>
+                <th>Стек</th>
+                <th>Доход</th>
+                <th>Расходы</th>
+                <th>Прибыль</th>
+                <th>Маржа</th>
+                <th>Burn Rate</th>
+                <th>$/час</th>
+                <th>Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in projects %}
+            <tr>
+                <td><strong>{{ p.project_name }}</strong></td>
+                <td>{{ p.stack or '—' }}</td>
+                <td>${{ "{:,.0f}".format(p.total_revenue) }}</td>
+                <td>${{ "{:,.0f}".format(p.total_costs) }}</td>
+                <td style="color: {{ 'var(--green)' if p.profit > 0 else 'var(--red)' }}">
+                    ${{ "{:,.0f}".format(p.profit) }}
+                </td>
+                <td>
+                    <span class="status status-{{ p.status }}">
+                        <span class="status-dot"></span>
+                        {{ "%.1f"|format(p.margin) }}%
+                    </span>
+                </td>
+                <td>${{ "{:,.0f}".format(p.burn_rate) }}/мес</td>
+                <td>${{ "%.1f"|format(p.revenue_per_hour) }}</td>
+                <td>
+                    <span class="status status-{{ p.status }}">
+                        <span class="status-dot"></span>
+                        {{ 'Прибыльный' if p.status == 'green' else 'Пограничный' if p.status == 'yellow' else 'Убыточный' }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card animate-in">
+    <div id="project-margin-chart" class="chart-container"></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const projects = {{ projects | tojson }};
+    document.addEventListener('DOMContentLoaded', () => {
+        renderProfitabilityBar('project-margin-chart', projects);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Задачи — AI Analytics Agent{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📋 Анализ задач</h1>
+    <p>Затраты и эффективность по типам задач</p>
+</div>
+
+<div class="card animate-in">
+    <div class="card-header">
+        <span class="card-title">Метрики по типам задач</span>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Тип задачи</th>
+                <th>Кол-во</th>
+                <th>Оценка (ч)</th>
+                <th>Факт (ч)</th>
+                <th>Перерасход</th>
+                <th>Стоимость</th>
+                <th>Reopen Rate</th>
+                <th>Статус</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in task_types %}
+            <tr>
+                <td><strong>{{ t.task_type }}</strong></td>
+                <td>{{ t.task_count }}</td>
+                <td>{{ "%.0f"|format(t.total_estimated_hours) }}</td>
+                <td>{{ "%.0f"|format(t.total_actual_hours) }}</td>
+                <td>
+                    <span class="status status-{{ t.status }}">
+                        <span class="status-dot"></span> {{ "%.2f"|format(t.overtime_ratio) }}x
+                    </span>
+                </td>
+                <td>${{ "{:,.0f}".format(t.total_cost) }}</td>
+                <td>{{ "%.2f"|format(t.reopen_rate) }}</td>
+                <td>
+                    <span class="status status-{{ t.status }}">
+                        <span class="status-dot"></span>
+                        {{ 'Норма' if t.status == 'green' else 'Внимание' if t.status == 'yellow' else 'Проблема' }}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="card animate-in">
+    <div id="overtime-chart" class="chart-container"></div>
+</div>
+
+{% if anomalies %}
+<div class="card animate-in">
+    <div class="card-header">
+        <span class="card-title">⚠️ Аномальные задачи</span>
+        <span class="card-badge status-yellow">{{ anomalies|length }}</span>
+    </div>
+    {% for a in anomalies %}
+    <div class="anomaly-item">
+        <div class="anomaly-severity {{ a.severity }}"></div>
+        <div class="anomaly-text">{{ a.description }}</div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const taskTypes = {{ task_types | tojson }};
+    document.addEventListener('DOMContentLoaded', () => {
+        renderOvertimeChart('overtime-chart', taskTypes);
+    });
+</script>
+{% endblock %}

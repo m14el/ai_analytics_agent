@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}Дашборд — AI Analytics Agent{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📊 Аналитический дашборд</h1>
+    <p>Обзор прибыльности проектов, стеков и процессов разработки</p>
+</div>
+
+<!-- KPI Cards -->
+<div class="kpi-grid">
+    <div class="kpi-card animate-in {{ 'positive' if summary.total_profit > 0 else 'negative' }}">
+        <div class="kpi-label">Общий доход</div>
+        <div class="kpi-value">${{ "{:,.0f}".format(summary.total_revenue) }}</div>
+    </div>
+    <div class="kpi-card animate-in">
+        <div class="kpi-label">Общие расходы</div>
+        <div class="kpi-value" style="color: var(--accent-cyan)">${{ "{:,.0f}".format(summary.total_costs) }}</div>
+    </div>
+    <div class="kpi-card animate-in {{ 'positive' if summary.total_profit > 0 else 'negative' }}">
+        <div class="kpi-label">Прибыль</div>
+        <div class="kpi-value">${{ "{:,.0f}".format(summary.total_profit) }}</div>
+        <div class="kpi-sub">Маржа: {{ "%.1f"|format(summary.overall_margin) }}%</div>
+    </div>
+    <div class="kpi-card animate-in {{ 'negative' if summary.loss_projects_count > 0 else 'positive' }}">
+        <div class="kpi-label">Убыточные проекты</div>
+        <div class="kpi-value">{{ summary.loss_projects_count }}</div>
+        <div class="kpi-sub">из {{ summary.project_count }} проектов</div>
+    </div>
+    <div class="kpi-card animate-in">
+        <div class="kpi-label">Разработчиков</div>
+        <div class="kpi-value" style="color: var(--accent-purple)">{{ summary.developer_count }}</div>
+    </div>
+    <div class="kpi-card animate-in">
+        <div class="kpi-label">Задач</div>
+        <div class="kpi-value" style="color: var(--accent-blue)">{{ summary.task_count }}</div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="grid-2">
+    <div class="card animate-in">
+        <div id="profitability-bar" class="chart-container"></div>
+    </div>
+    <div class="card animate-in">
+        <div id="profit-pie" class="chart-container"></div>
+    </div>
+</div>
+
+<div class="grid-2">
+    <div class="card animate-in">
+        <div id="stack-comparison" class="chart-container"></div>
+    </div>
+    <div class="card animate-in">
+        <div id="burn-rate" class="chart-container"></div>
+    </div>
+</div>
+
+<!-- AI Analysis Panel -->
+{% if summary.ai_analysis %}
+<div class="ai-panel animate-in">
+    <div class="ai-header">
+        <span class="ai-icon">🧠</span>
+        <span class="ai-title">AI Аналитика</span>
+    </div>
+    <p style="color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6;">
+        {{ summary.ai_analysis.summary }}
+    </p>
+
+    {% if summary.ai_analysis.hypotheses %}
+    <h3 style="font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--accent-purple);">
+        💡 Гипотезы
+    </h3>
+    {% for h in summary.ai_analysis.hypotheses %}
+    <div class="hypothesis-card">
+        <div class="hypothesis-title">
+            <span class="status status-{{ 'red' if h.severity == 'high' or h.severity == 'critical' else 'yellow' if h.severity == 'medium' else 'green' }}">
+                <span class="status-dot"></span> {{ h.severity|upper }}
+            </span>
+            &nbsp; {{ h.title }}
+        </div>
+        <div class="hypothesis-desc">{{ h.description }}</div>
+        <div class="confidence-bar">
+            <div class="confidence-fill" style="width: {{ (h.confidence * 100)|int }}%"></div>
+        </div>
+        <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">
+            Уверенность: {{ (h.confidence * 100)|int }}%
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    {% if summary.ai_analysis.recommendations %}
+    <h3 style="font-size: 15px; font-weight: 600; margin: 20px 0 12px; color: var(--accent-cyan);">
+        🎯 Рекомендации
+    </h3>
+    {% for r in summary.ai_analysis.recommendations %}
+    <div class="recommendation-card">
+        <div class="rec-category">{{ r.category }}</div>
+        <div class="hypothesis-title">{{ r.title }}</div>
+        <div class="hypothesis-desc">{{ r.description }}</div>
+        <div style="font-size: 12px; color: var(--green); margin-top: 8px;">
+            📈 {{ r.expected_impact }}
+        </div>
+    </div>
+    {% endfor %}
+    {% endif %}
+</div>
+{% endif %}
+
+<!-- Anomalies -->
+{% if anomalies %}
+<div class="card animate-in">
+    <div class="card-header">
+        <span class="card-title">⚠️ Обнаруженные аномалии</span>
+        <span class="card-badge status-red">{{ anomalies|length }}</span>
+    </div>
+    {% for a in anomalies %}
+    <div class="anomaly-item">
+        <div class="anomaly-severity {{ a.severity }}"></div>
+        <div class="anomaly-text">{{ a.description }}</div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const projects = {{ summary.projects | tojson }};
+    const stacks = {{ summary.stacks | tojson }};
+    const taskTypes = {{ summary.task_types | tojson }};
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderProfitabilityBar('profitability-bar', projects);
+        renderProfitPie('profit-pie', projects);
+        renderStackComparison('stack-comparison', stacks);
+        renderBurnRate('burn-rate', projects);
+    });
+</script>
+{% endblock %}

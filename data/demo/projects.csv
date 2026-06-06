@@ -1,0 +1,19 @@
+id,name,project_type,client,stack,status,start_date,end_date
+1,Dragon Legends,game,GameWorld Inc,Unity,active,2025-03-01,
+2,Battle Arena Online,game,eSports Corp,UE,active,2025-01-15,
+3,Corporate Portal,web,TechFinance Ltd,ASP.NET,completed,2024-06-01,2025-04-30
+4,FoodDelivery App,mobile,QuickBite,Flutter,active,2025-02-01,
+5,E-Commerce Platform,web,ShopMaster,Vue.js,active,2024-11-01,
+6,CRM System,web,SalesForce Pro,Laravel,active,2025-04-01,
+7,Fitness Tracker,mobile,HealthPlus,Flutter,active,2025-05-01,
+8,Real Estate Portal,web,HomeFinder,Vue.js,completed,2024-09-01,2025-03-31
+9,Inventory Management,web,LogiTech,ASP.NET,active,2025-01-01,
+10,Racing Game,game,SpeedDemon Games,Unity,completed,2024-04-01,2025-02-28
+11,Educational Platform,web,EduLearn,Laravel,active,2025-03-15,
+12,Chat Application,mobile,ConnectNow,Flutter,paused,2025-02-01,
+13,VR Museum Tour,game,CultureTech,UE,active,2025-06-01,
+14,Banking Dashboard,web,FinSecure Bank,ASP.NET,active,2025-01-15,
+15,Social Network,mobile,SocialBuzz,Vue.js,active,2024-12-01,
+16,Logistics Platform,web,TransGlobal,Laravel,active,2025-03-01,
+17,AR Navigation,mobile,MapGenius,Unity,active,2025-04-15,
+18,Hotel Booking System,web,TravelEase,Vue.js,active,2025-02-15,

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Разработчики — AI Analytics Agent{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>👥 Разработчики</h1>
+    <p>Эффективность и загрузка команды</p>
+</div>
+
+<div class="card animate-in">
+    <div class="card-header">
+        <span class="card-title">Метрики разработчиков</span>
+        <span class="card-badge" style="background: var(--bg-glass); color: var(--text-secondary);">
+            {{ developers|length }}
+        </span>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Разработчик</th>
+                <th>Роль</th>
+                <th>Стек</th>
+                <th>Часы</th>
+                <th>Стоимость</th>
+                <th>Задач</th>
+                <th>Точность оценок</th>
+                <th>Перерасход</th>
+                <th>Эффективность</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in developers %}
+            <tr>
+                <td><strong>{{ d.developer_name }}</strong></td>
+                <td>{{ d.role or '—' }}</td>
+                <td>{{ d.stack or '—' }}</td>
+                <td>{{ "%.0f"|format(d.total_hours) }}</td>
+                <td>${{ "{:,.0f}".format(d.total_cost) }}</td>
+                <td>{{ d.tasks_completed }}</td>
+                <td>
+                    {% set acc = d.avg_estimation_accuracy %}
+                    <span class="status {{ 'status-green' if acc >= 0.8 and acc <= 1.2 else 'status-yellow' if acc >= 0.6 else 'status-red' }}">
+                        <span class="status-dot"></span> {{ "%.0f"|format(acc * 100) }}%
+                    </span>
+                </td>
+                <td>{{ "%.2f"|format(d.overtime_ratio) }}x</td>
+                <td>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="progress-bar" style="width: 80px;">
+                            <div class="progress-fill {{ 'green' if d.efficiency_score >= 70 else 'yellow' if d.efficiency_score >= 50 else 'red' }}"
+                                 style="width: {{ [d.efficiency_score, 100]|min }}%"></div>
+                        </div>
+                        <span style="font-size: 12px; color: var(--text-secondary);">{{ "%.0f"|format(d.efficiency_score) }}</span>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
